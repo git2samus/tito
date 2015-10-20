@@ -38,12 +38,21 @@ module.exports = (robot) ->
     else
       "no quedan bolsas sin abrir"
 
-  robot.respond /¿*(hay|quedan?|ten(é|(e|ía)(mo)?)s|cuant(o|as))( +bolsas)?( +de)?( +(caf(e|é)|coffee|\(c(offee)?\)))?\?*/i, (res) ->
-    res.reply getBags()
-  robot.respond /¿*cuant(o|as)( +bolsas)?( +de)?( +(caf(e|é)|coffee|\(c(offee)?\)))? +(hay|quedan?|ten(é|(e|ía)(mo)?)s)\?*/i, (res) ->
+  HAY_RE = "(?:hay|quedan?|ten(?:[eé]|[ií]a(?:mo)?))s)" # hay, queda, quedan, tenes, tenias, teniamos
+  ABRIO_RE = "(?:se +(?:abri[oó]|ha +abierto)|abr[ií](?:mos|eron)?)" # se abrio, se ha abierto, abri, abrimos, abrieron
+  COMPRAMOS_RE = "(?:compra(?:mos|ron)|tra(?:jeron|imos))" # compramos, compraron, trajeron, trajimos
+  CUANTAS_RE = "cuant(?:o|as)" # cuanto, cuantas
+  UN_RE = "(?:una?|otr[oa]|la)" # un, una, otro, otra, la
+  CAFE_RE = "(?:caf[eé]|coffee|\(?:c(?:offee)?\))" # cafe, coffee, (c), (coffee)
+  BOLSAS_RE = "(?:bolsas?(?: +de +#{CAFE_RE})?|(?:bolsas? +de)? +#{CAFE_RE})"
+  NUM_RE = "(\d|una|dos|tres|cuatro|cinco|seis)"
+
+  # hay café? - Muestra cuantas bolsas quedan sin abrir
+  robot.respond new RegExp("¿*(#{HAY_RE} +#{BOLSAS_RE}|#{CUANTAS_RE} +#{BOLSAS_RE} +#{HAY_RE})\?*", i), (res) ->
     res.reply getBags()
 
-  robot.respond /(se +abri(ó|o)|abr(í|i)(mos|eron)?) +(una|otra) +bolsa( +de +(caf(e|é)|coffee|\(c(offee)?\)))?/i, (res) ->
+  # abrimos una bolsa - Registra cuando se abre una nueva bolsa de café
+  robot.respond new RegExp("#{ABRIO_RE} +#{UN_RE} +#{BOLSAS_RE}", i), (res) ->
     bags = _getBags()
     if bags > 0
       _setBags(bags - 1)
@@ -51,13 +60,15 @@ module.exports = (robot) ->
     else
       res.reply "no tengo más bolsas registradas"
 
-  robot.respond /(compra(mos|ron)|tra(jeron|imos)) +(\d|una|dos|tres|cuatro|cinco|seis) +bolsas?( +de +(caf(e|é)|coffee|\(c(offee)?\)))?/i, (res) ->
+  # compramos dos bolsas - Registra la compra de nuevas bolsas de café
+  robot.respond new RegExp("#{COMPRAMOS_RE} +#{NUM_RE} +#{BOLSAS_RE}", i), (res) ->
     bags = _getBags()
-    newBags = _parseNum(res.match[4])
+    newBags = _parseNum(res.match[1])
     _setBags(bags + newBags)
     res.reply "ok, #{getBags()}"
 
-  robot.respond /(hay|quedan?|ten(é|e(mo)?)s) +(\d|una|dos|tres|cuatro|cinco|seis) +bolsas?( +de +(caf(e|é)|coffee|\(c(offee)?\)))?/i, (res) ->
-    newBags = _parseNum(res.match[4])
+  # quedan tres bolsas - Resetea el conteo de bolsas sin abrir
+  robot.respond new RegExp("#{HAY_RE} +#{NUM_RE} +#{BOLSAS_RE}", i), (res) ->
+    newBags = _parseNum(res.match[1])
     _setBags(newBags)
     res.reply "ok, #{getBags()}"
