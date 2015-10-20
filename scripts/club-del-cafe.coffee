@@ -13,6 +13,7 @@
 module.exports = (robot) ->
   _parseNum = (num) ->
     switch num
+      when "un"     then 1
       when "una"    then 1
       when "dos"    then 2
       when "tres"   then 3
@@ -45,7 +46,7 @@ module.exports = (robot) ->
   UN_RE = "(?:una?|otr[oa]|la)" # un, una, otro, otra, la
   CAFE_RE = "(?:caf[eé]|coffee|\\(c(?:offee)?\\))" # cafe, coffee, (c), (coffee)
   BOLSAS_RE = "(?:bolsas?(?: +de +#{CAFE_RE})?|(?:bolsas? +de)? +#{CAFE_RE})"
-  NUM_RE = "(\\d|una|dos|tres|cuatro|cinco|seis)"
+  NUM_RE = "(\\d|una?|dos|tres|cuatro|cinco|seis)"
 
   # hay café? - Muestra cuantas bolsas quedan sin abrir
   robot.respond new RegExp("¿*(?:#{HAY_RE} +#{BOLSAS_RE}|#{CUANTAS_RE} +#{BOLSAS_RE} +#{HAY_RE})\\?*", "i"), (res) ->
