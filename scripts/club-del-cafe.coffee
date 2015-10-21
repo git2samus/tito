@@ -22,13 +22,30 @@ module.exports = (robot) ->
       when "seis"   then 6
       else ParseInt(num)
 
+  _getFunds = () ->
+    robot.brain.data.coffeeFunds ?= 0
+  _setFunds = (funds) ->
+    if typeof(funds) is "number"
+      robot.brain.data.coffeeFunds = funds
+    else
+      robot.logger.error "invalid _setFunds argument: #{funds}"
+
   _getBags = () ->
-    robot.brain.data.numBags ?= 0
+    robot.brain.data.coffeeBags ?= 0
   _setBags = (bags) ->
     if typeof(bags) is "number" and bags >= 0
-      robot.brain.data.numBags = bags
+      robot.brain.data.coffeeBags = bags
     else
-      robot.logger.error "invalid setBags argument: #{bags}"
+      robot.logger.error "invalid _setBags argument: #{bags}"
+
+  getFunds = () ->
+    funds = _getFunds()
+    if funds > 0
+      "$#{funds} a favor"
+    else if bags < 0
+      "se deben $#{Math.abs(funds)} de la última compra"
+    else
+      "sin fondos"
 
   getBags = () ->
     bags = _getBags()
@@ -66,7 +83,7 @@ module.exports = (robot) ->
     bags = _getBags()
     newBags = _parseNum(res.match[1])
     _setBags(bags + newBags)
-    res.reply "ok, #{getBags()}"
+    res.reply "ok, #{getBags()} (favor actualizar fondos)"
 
   # quedan tres bolsas - Resetea el conteo de bolsas sin abrir
   robot.respond new RegExp("#{HAY_RE} +#{NUM_RE} +#{BOLSAS_RE}", "i"), (res) ->
