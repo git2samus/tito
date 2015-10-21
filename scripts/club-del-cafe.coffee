@@ -49,7 +49,7 @@ module.exports = (robot) ->
   NUM_RE = "(\\d|una?|dos|tres|cuatro|cinco|seis)"
 
   # hay café? - Muestra cuantas bolsas quedan sin abrir
-  robot.respond new RegExp("¿*(?:#{HAY_RE} +#{BOLSAS_RE}|#{CUANTAS_RE} +#{BOLSAS_RE} +#{HAY_RE})\\?*", "i"), (res) ->
+  robot.respond new RegExp("¿*(?:#{HAY_RE}(?: +#{BOLSAS_RE})?|#{CUANTAS_RE} +#{BOLSAS_RE} +#{HAY_RE})\\?*", "i"), (res) ->
     res.reply getBags()
 
   # abrimos una bolsa - Registra cuando se abre una nueva bolsa de café
