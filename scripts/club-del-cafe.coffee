@@ -56,42 +56,45 @@ module.exports = (robot) ->
     else
       "no quedan bolsas sin abrir"
 
-  HAY_RE = "(?:hay|quedan?|ten(?:[eé]|[ií]a(?:mo)?)s)" # hay, queda, quedan, tenes, tenias, teniamos
-  ABRIO_RE = "(?:se\\s+(?:abri[oó]|ha\\s+abierto)|abr[ií](?:mos|eron)?)" # se abrio, se ha abierto, abri, abrimos, abrieron
-  COMPRAMOS_RE = "(?:compra(?:mos|ron)|tra(?:jeron|imos))" # compramos, compraron, trajeron, trajimos
-  CUANTAS_RE = "cuant(?:o|as)" # cuanto, cuantas
-  UN_RE = "(?:una?|otr[oa]|la)" # un, una, otro, otra, la
-  CAFE_RE = "(?:caf[eé]|coffee|\\(c(?:offee)?\\))" # cafe, coffee, (c), (coffee)
-  BOLSAS_RE = "(?:bolsas?(?:\\s+de\\s+#{CAFE_RE})?|(?:bolsas?\\s+de)?\\s+#{CAFE_RE})"
-  NUM_RE = "(\\d|una?|dos|tres|cuatro|cinco|seis)"
+  #HAY_RE = "(?:hay|quedan?|ten(?:[eé]|[ií]a)(?:mo)?s)" # hay, queda, quedan, tenes, tenemos, tenias, teniamos
+  #ABRIO_RE = "(?:se\\s+(?:abri[oó]|ha\\s+abierto)|abr[ií](?:mos|eron)?)" # se abrio, se ha abierto, abri, abrimos, abrieron
+  #COMPRAMOS_RE = "(?:compra(?:mos|ron)|tra(?:jeron|imos))" # compramos, compraron, trajeron, trajimos
+  #CUANTAS_RE = "cuant(?:o|as)" # cuanto, cuantas
+  #UN_RE = "(?:una?|otr[oa]|la)" # un, una, otro, otra, la
+  #CAFE_RE = "(?:caf[eé]|coffee|\\(c(?:offee)?\\))" # cafe, coffee, (c), (coffee)
+  #BOLSAS_RE = "(?:bolsas?(?:\\s+de\\s+#{CAFE_RE})?|(?:bolsas?\\s+de)?\\s+#{CAFE_RE})"
+  #NUM_RE = "(\\d|una?|dos|tres|cuatro|cinco|seis)"
+
+  HAVE_RE = "(?:hay|(?:nos\\s+)?queda|tenemos)" # hay, queda, nos queda, tenemos
+  COFFEE_RE = "(?:caf[eé]|coffee|\\(c(?:offee)?\\))" # cafe, coffee, (c), (coffee)
 
   # hay café? - Muestra cuantas bolsas quedan sin abrir
-  robot.respond new RegExp("¿*\\s*(?:#{HAY_RE}(?:\\s+#{BOLSAS_RE})?|#{CUANTAS_RE}\\s+#{BOLSAS_RE}\\s+#{HAY_RE})\\s*\\?+", "i"), (res) ->
+  robot.respond new RegExp("¿*\\s*(?:#{HAVE_RE}\\s+#{COFFEE_RE}|cuanto\\s+#{COFFEE_RE}\\s+#{HAVE_RE})\\s*\\?+", "i"), (res) ->
     res.reply getBags()
 
   # abrimos una bolsa - Registra cuando se abre una nueva bolsa de café
-  robot.respond new RegExp("#{ABRIO_RE}\\s+#{UN_RE}\\s+#{BOLSAS_RE}", "i"), (res) ->
-    bags = _getBags()
-    if bags > 0
-      _setBags(bags - 1)
-      res.reply "ok, #{getBags()}"
-    else
-      res.reply "no tengo más bolsas registradas"
+  #robot.respond new RegExp("#{ABRIO_RE}\\s+#{UN_RE}\\s+#{BOLSAS_RE}", "i"), (res) ->
+  #  bags = _getBags()
+  #  if bags > 0
+  #    _setBags(bags - 1)
+  #    res.reply "ok, #{getBags()}"
+  #  else
+  #    res.reply "no tengo más bolsas registradas"
 
   # compramos dos bolsas - Registra la compra de nuevas bolsas de café
-  robot.respond new RegExp("#{COMPRAMOS_RE}\\s+#{NUM_RE}\\s+#{BOLSAS_RE}", "i"), (res) ->
-    bags = _getBags()
-    newBags = _parseNum(res.match[1])
-    _setBags(bags + newBags)
-    res.reply "ok, #{getBags()} (favor actualizar fondos)"
+  #robot.respond new RegExp("#{COMPRAMOS_RE}\\s+#{NUM_RE}\\s+#{BOLSAS_RE}", "i"), (res) ->
+  #  bags = _getBags()
+  #  newBags = _parseNum(res.match[1])
+  #  _setBags(bags + newBags)
+  #  res.reply "ok, #{getBags()} (favor actualizar fondos)"
 
   # quedan tres bolsas - Resetea el conteo de bolsas sin abrir
-  robot.respond new RegExp("¿*\\s#{HAY_RE}\\s+#{NUM_RE}\\s+#{BOLSAS_RE}(\\s*\\?+)", "i"), (res) ->
-    newBags = _parseNum(res.match[1])
-    isQuestion = res.match[2]?
-    if isQuestion
-      bags = _getBags()
-      res.reply "#{if bags == newBags then "sí" else "no"}, #{getBags()}"
-    else
-      _setBags(newBags)
-      res.reply "ok, #{getBags()}"
+  #robot.respond new RegExp("¿*\\s#{HAY_RE}\\s+#{NUM_RE}\\s+#{BOLSAS_RE}(\\s*\\?+)", "i"), (res) ->
+  #  newBags = _parseNum(res.match[1])
+  #  isQuestion = res.match[2]?
+  #  if isQuestion
+  #    bags = _getBags()
+  #    res.reply "#{if bags == newBags then "sí" else "no"}, #{getBags()}"
+  #  else
+  #    _setBags(newBags)
+  #    res.reply "ok, #{getBags()}"
